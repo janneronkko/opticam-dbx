@@ -1,0 +1,6 @@
+*.in            text
+*.py            text
+*.txt           text
+
+.gitattributes  text
+.gitignore      text
