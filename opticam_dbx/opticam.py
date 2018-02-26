@@ -16,7 +16,7 @@ _log = logging.getLogger('opticam')
 def main():
     args = parse_args()
     if args.only_show_version:
-        print(pkg_resources.get_distribution('opticam_dbx').version)
+        print(pkg_resources.get_distribution('opticam-dbx').version)
         return
 
     setup_logging()
@@ -31,8 +31,8 @@ def main():
     )
 
     _log.info(
-        'Downloading new surveillance camera videos from Dropbox (opticam_dbx version %s)',
-        pkg_resources.get_distribution('opticam_dbx').version,
+        'Downloading new surveillance camera videos from Dropbox (opticam-dbx version %s)',
+        pkg_resources.get_distribution('opticam-dbx').version,
     )
     downloader.download()
 
