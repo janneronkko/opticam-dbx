@@ -12,26 +12,13 @@ _log = logging.getLogger('opticam')
 
 def main():
     args = parse_args()
-    if args.only_show_version:
-        print(pkg_resources.get_distribution('opticam-dbx').version)
-        return
 
     setup_logging()
 
     if args.env_file:
         envparse.env.read_envfile(args.env_file)
 
-    downloader = opticam.AlarmVideoDownloader(
-        envparse.env('DROPBOX_TOKEN'),
-        args.dest,
-        remove_downloaded=args.remove_downloaded,
-    )
-
-    _log.info(
-        'Downloading new surveillance camera videos from Dropbox (opticam-dbx version %s)',
-        pkg_resources.get_distribution('opticam-dbx').version,
-    )
-    downloader.download()
+    args.main(args)
 
 
 def parse_args():
@@ -43,6 +30,30 @@ def parse_args():
         help='Path to env file',
     )
 
+    def print_help(args): # pylint: disable=unused-argument
+        print('No command given')
+        print()
+        parser.print_help()
+        sys.exit(1)
+
+    parser.set_defaults(main=print_help)
+
+    subparsers = parser.add_subparsers(title='Command')
+    configure_show_version(subparsers.add_parser('version', help='Show version'))
+    configure_download(subparsers.add_parser('download', help='Download videos from Dropbox'))
+
+    return parser.parse_args()
+
+
+def configure_show_version(parser):
+    parser.set_defaults(main=show_version_main)
+
+
+def show_version_main(args): # pylint: disable=unused-argument
+    print(pkg_resources.get_distribution('opticam-dbx').version)
+
+
+def configure_download(parser):
     parser.add_argument(
         '--dest',
         default=envparse.env('VIDEO_ROOT_DIR', '.'),
@@ -56,15 +67,21 @@ def parse_args():
         action='store_true',
     )
 
-    parser.add_argument(
-        '--version',
-        help='Show version and exit',
-        dest='only_show_version',
-        default=False,
-        action='store_true',
+    parser.set_defaults(main=download_main)
+
+
+def download_main(args):
+    downloader = opticam.AlarmVideoDownloader(
+        envparse.env('DROPBOX_TOKEN'),
+        args.dest,
+        remove_downloaded=args.remove_downloaded,
     )
 
-    return parser.parse_args()
+    _log.info(
+        'Downloading new surveillance camera videos from Dropbox (opticam-dbx version %s)',
+        pkg_resources.get_distribution('opticam-dbx').version,
+    )
+    downloader.download()
 
 
 def setup_logging():
