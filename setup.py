@@ -1,15 +1,5 @@
 import setuptools
 
-from pkg_resources import parse_requirements
-
-
-with open('requirements.txt', 'r') as f:
-    requirements = [
-        str(r)
-        for r in parse_requirements(f)
-    ]
-
-requirements.append('setuptools')
 
 setuptools.setup(
     name='opticam-dbx',
@@ -33,7 +23,11 @@ setuptools.setup(
         'opticam_dbx',
     ],
     python_requires='>=3.6',
-    install_requires=requirements,
+    install_requires=[
+        'dropbox',
+        'envparse',
+        'setuptools',
+    ],
     entry_points={
         'console_scripts': [
             'opticam-dbx = opticam_dbx.cli:main',
