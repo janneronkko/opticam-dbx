@@ -36,7 +36,7 @@ setuptools.setup(
     install_requires=requirements,
     entry_points={
         'console_scripts': [
-            'opticam-dbx = opticam_dbx.opticam:main',
+            'opticam-dbx = opticam_dbx.cli:main',
         ],
     },
     setup_requires=[
