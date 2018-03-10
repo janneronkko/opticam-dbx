@@ -17,7 +17,6 @@ class AlarmVideoDownloader(object):
 
     def download(self):
         for file in self._get_alarm_video_files():
-            self._download_file(file)
 
             if self.remove_downloaded:
                 _log.info(f'Removing file {file.path_lower} from Dropbox')
@@ -28,7 +27,10 @@ class AlarmVideoDownloader(object):
 
         dest_path = os.path.join(
             self.dest_root_dir,
-            '{}.avi'.format(recording_time.strftime('%Y-%m-%d %H-%M-%S')),
+            '{} {}.avi'.format(
+                recording_time.strftime('%Y-%m-%d %H-%M-%S'),
+                file.rev
+            ),
         )
         dest_path = os.path.abspath(dest_path)
 
@@ -57,8 +59,7 @@ class AlarmVideoDownloader(object):
             include_media_info=True,
         )
 
-        yield from (
-            entry
-            for entry in files_list_result.entries
-            if entry.name.endswith('.avi')
-        )
+        for entry in files_list_result.entries:
+            if entry.name.endswith('.avi'):
+                for revision in self.dbx.files_list_revisions(entry.path_lower).entries:
+                    yield revision
