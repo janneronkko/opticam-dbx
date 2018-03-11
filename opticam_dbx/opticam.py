@@ -35,15 +35,7 @@ class AlarmVideoDownloader(object):
         dest_path = os.path.abspath(dest_path)
 
         if os.path.isfile(dest_path):
-            existing_file_size = os.stat(dest_path).st_size
-            if existing_file_size == file.size:
-                _log.info(f'Skipping already downloaded file {dest_path}')
-                return
-
-            assert existing_file_size < file.size, \
-                f'File {file.path_lower} is smaller than existing file {dest_path}'
-
-            _log.info(f'Removing existing partially downloaded file {dest_path}')
+            _log.info(f'Removing existing downloaded file {dest_path}')
             os.remove(dest_path)
 
         elif os.path.exists(dest_path):
