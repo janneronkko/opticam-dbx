@@ -15,12 +15,16 @@ class AlarmVideoDownloader(object):
         self.dest_root_dir = dest_root_dir
         self.remove_downloaded = remove_downloaded
 
-    def download(self):
+    def download(self, after_download=None):
         for file in self._get_alarm_video_files():
+            downloaded_file_path = self._download_file(file)
 
             if self.remove_downloaded:
                 _log.info(f'Removing file {file.path_lower} from Dropbox')
                 self.dbx.files_delete(file.path_lower)
+
+            if after_download:
+                after_download(downloaded_file_path)
 
     def _download_file(self, file):
         recording_time = datetime.datetime.strptime(file.name, 'MDalarm_%Y%m%d_%H%M%S.avi')
@@ -44,6 +48,8 @@ class AlarmVideoDownloader(object):
         _log.info(f'Downloading file {file.name} into {dest_path}')
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
         self.dbx.files_download_to_file(dest_path, file.path_lower)
+
+        return dest_path
 
     def _get_alarm_video_files(self):
         files_list_result = self.dbx.files_list_folder(
