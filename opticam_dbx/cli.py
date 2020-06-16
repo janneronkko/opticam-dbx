@@ -15,6 +15,8 @@ _log = logging.getLogger('opticam')
 def main():
     args = parse_args()
 
+    os.umask(int(args.umask, 8))
+
     setup_logging()
 
     if args.env_file:
@@ -30,6 +32,12 @@ def parse_args():
         '--env-file',
         '-e',
         help='Path to env file',
+    )
+
+    parser.add_argument(
+        '--umask',
+        help='Set umask (default %(default)s)',
+        default='0o022',
     )
 
     def print_help(args): # pylint: disable=unused-argument
