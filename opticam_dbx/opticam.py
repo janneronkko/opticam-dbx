@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os
+import re
 
 import dropbox
 
@@ -27,7 +28,13 @@ class AlarmVideoDownloader(object):
                 after_download(downloaded_file_path)
 
     def _download_file(self, file):
-        recording_time = datetime.datetime.strptime(file.name, 'MDalarm_%Y%m%d_%H%M%S.avi')
+        timestamp_match = re.match(
+            r'MDalarm_(?P<timestamp>\d{8}_\d{6}).*\.avi',
+            file.name,
+        )
+        assert timestamp_match, f'{file.name} is unexpected.'
+
+        recording_time = datetime.datetime.strptime(timestamp_match.group('timestamp'), '%Y%m%d_%H%M%S')
 
         dest_path = os.path.join(
             self.dest_root_dir,
